@@ -4,6 +4,7 @@
             <th scope="col">Producto</th>
             <th scope="col">Precio</th>
             <th scope="col">Img</th>
+            <th scope="col">Btn</th>
         </tr>
     </thead>
     <tbody id="cuerpoTabla">
@@ -24,10 +25,10 @@
             <%} else { %>
             
                 <tr class="table-secondary">
-                    <td><%=productos[i].nombre%></td>
-                    <td><%=productos[i].precio%></td>
+                    <td><%=productos[i].name%></td>
+                    <td><%=productos[i].price%></td>
                     <!-- <td><%=productos[i].foto%></td> -->
-                    <td class="imagen"><img src=<%=productos[i].foto%>></img></td>
+                    <td class="imagen"><img src=<%=productos[i].thumbnail%>></img></td>
                 </tr>
             <% } %>
             

@@ -1,16 +1,12 @@
-
 const { options } = require ("../src/options/MariaDB");
 const knex = require("knex")(options);
 
-
-let prods=[];
-
-class Contenedor {
+/* class Contenedor {
   constructor (options, table){
       this.options = options;
       this.table = table;
   }
-  //Add object
+  
   async save(object){
       try {
           if (fs.existsSync(this.file)) {
@@ -29,16 +25,15 @@ class Contenedor {
           throw new Error(err);
       }
   }
-}
-/* let contenedor = new Contenedor('./public/products.json'); */
+} */
 
+//Carga de todos los productos desde la DB
 async function listOfProducts() {
 
   const p = await knex.from("products")
     .select("*")
     .then((rows) => {
-      /* console.log(prods) */
-      let prods=Object.values(JSON.parse(JSON.stringify(rows)));
+      const prods=Object.values(JSON.parse(JSON.stringify(rows)));
       return prods;
     })
     .catch((err) => {
@@ -49,35 +44,25 @@ async function listOfProducts() {
 
 }
 
-/* const listOfProducts = () => {
-
-  let prods=[]
-
-  knex.from("products")
-    .select("*")
-    .then((rows) => {
-      console.log(prods)
-      return filas=Object.values(JSON.parse(JSON.stringify(rows)));
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  
-  return prods;
-
-} */
 
 const getProduct = (id) => {
   return (products.find(product => product.id === parseInt(id)) || { error: 'Producto no encontrado' })
 }
 
-const addProduct = (product) => {
-  const prod = {
-    name: product.name,
-    price: product.price,
-    thumbnail: product.thumbnail
-  }
-  contenedor.save(prod)
+
+// Persiste los productos en la BD
+function addProduct (prod) {
+
+  knex("products")
+    .insert(prod)
+    .then(() => {
+      console.log("Producto agregado!")
+      return prod;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
 }
 
 const updateProduct = (id, newContent) => {
@@ -92,14 +77,18 @@ const updateProduct = (id, newContent) => {
   }
 }
 
-const deleteProduct = (id) => {
-  const product = getProduct(parseInt(id))
-  if ((product.id == id) && (product.id != null)) {
-    products.splice(products.indexOf(product), 1)
-    return 'Producto eliminado'
-  } else {
-    return 'Producto no encontrado'
-  }
+function deleteProduct(idProducto) {
+  knex("products")
+  .where({ id: idProducto })
+  .del()
+    .then(() => {
+      console.log("Producto eliminaro!")
+      return idProducto;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+   
 }
 
 module.exports = { listOfProducts, getProduct, addProduct, updateProduct, deleteProduct }

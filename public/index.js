@@ -11,40 +11,48 @@ document.getElementById("enviarChat").addEventListener("click", () => {
     
     const mensaje = {
       mail: document.getElementById('inputMail').value,
-      msg: document.getElementById('inputChat').value,
-      date: output
+      message: document.getElementById('inputChat').value,
+      time: output
     }
-    
+
     socket.emit("mensaje", mensaje)
     
     limpiaChat()
 
+  } else {
+    document.getElementById("inputMail").focus()
   }
 
 });
 
 document.getElementById("productos").addEventListener("click", ()=>{
   
-  let prod={nombre:document.getElementById("titulo").value,
-  precio: document.getElementById("precio").value,
-  foto: document.getElementById("img").value}
+  let prod={name: document.getElementById("name").value,
+            price: document.getElementById("price").value,
+            thumbnail: document.getElementById("thumbnail").value}
   
   socket.emit("producto", prod)
   
 })
 
-function AddProducto(datosProducto){
-
-  socket.emit("producto", datosProducto)
+function eliminarProducto (idProducto){
   
+  let prod={name: document.getElementById("name").value,
+            price: document.getElementById("price").value,
+            thumbnail: document.getElementById("thumbnail").value,
+            id: idProducto}
+  
+  socket.emit("producto", prod)
+
 }
+
 
 socket.on("mensajes", (mensajes) => {
 
   const mensajesInput = mensajes
     .map(
       (mensaje) =>
-      `<p class="mailMensaje boxMensajes">${mensaje.mail}</p> <p class="fechaMensaje boxMensajes">[${mensaje.date}]</p> <p class="txtMensaje boxMensajes"> ${mensaje.msg}</p>`
+      `<p class="mailMensaje boxMensajes">${mensaje.mail}</p> <p class="fechaMensaje boxMensajes">[${mensaje.time}]</p> <p class="txtMensaje boxMensajes"> ${mensaje.message}</p>`
     
     )
     .join("<br>");
@@ -53,8 +61,6 @@ socket.on("mensajes", (mensajes) => {
 
 
 socket.on("productos", (data) => {
-
-  console.log(data)
 
   let tablaHtml=""
 
@@ -65,17 +71,18 @@ socket.on("productos", (data) => {
 
     if (i%2) {
       tablaHtml +=`<tr class="${rowImpar}">`
-      tablaHtml +=`<td>${data[i].nombre}</td>`
-      tablaHtml +=`<td>$${data[i].precio}</td>`
-      tablaHtml +=`<td class="imagen"><img src=${data[i].foto}></td></tr>`
-      
+      tablaHtml +=`<td>${data[i].name}</td>`
+      tablaHtml +=`<td>$${data[i].price}</td>`
+      tablaHtml +=`<td class="imagen"><img src=${data[i].thumbnail}></td>` //</tr>
+      tablaHtml +=`<td><button onclick="eliminarProducto(${data[i].id})" value=${data[i].id} id="eliminarProducto" type="submit" class="btn btn-primary">Del</button></tr>`
 
     } else {
       
       tablaHtml+=`<tr class="${rowPar}">`
-      tablaHtml+=`<td>${data[i].nombre}</td>`
-      tablaHtml+=`<td>$${data[i].precio}</td>`
-      tablaHtml+=`<td class="imagen"><img src=${data[i].foto}></td></tr>`
+      tablaHtml+=`<td>${data[i].name}</td>`
+      tablaHtml+=`<td>$${data[i].price}</td>`
+      tablaHtml+=`<td class="imagen"><img src=${data[i].thumbnail}></td>`
+      tablaHtml+=`<td><button onclick="eliminarProducto(${data[i].id})" value=${data[i].id} id="eliminarProducto" type="submit" class="btn btn-primary">Del</button></tr>`
       
     }
   }
@@ -85,5 +92,12 @@ socket.on("productos", (data) => {
   });
   
   function limpiaChat() {  
-    document.getElementById("inputChat").value=""
+    document.getElementById("inputChat").value="";
   }
+
+  document.getElementById("inputChat")
+    .addEventListener("keyup", function(e) {
+        if (e.keyCode === 13) {
+            document.getElementById("enviarChat").click();
+        }
+    });
