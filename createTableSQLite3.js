@@ -3,7 +3,7 @@ const knex = require("knex")(options);
 
 knex.schema.createTable("chat", (table)=>{
     table.string("mail")
-    table.integer("timeStamp")
+    table.integer("time")
     table.string("message")
 }).then(()=>{
     console.log("Tabla creada ok!");
